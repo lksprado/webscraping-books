@@ -19,23 +19,22 @@ def fetch_page():
         print(f"Erro ao acessar a página: {e}")
         return None
 
-# def parse_page(html):
-#     soup = BeautifulSoup(html, 'html.parser')
-#     return soup.prettify()
 
-def parse_category_links(html):
-    soup = BeautifulSoup(html, 'html.parser')
-    links = []
+def parse_category_links(html): 
+    soup = BeautifulSoup(html, 'html.parser') 
+    pages = set() 
+    # Encontra todos os links dentro de <li> que contêm a classe 'category' 
+    category_items = soup.find_all('li', class_=['', 'with-child']) 
+    # Pode-se procurar por 'class_=""' se não tiver outra classe 
+    for li in category_items: 
+        a_tag = li.find('a', class_='category', href=True) # Encontra o link dentro do <li> 
+        if a_tag: 
+            pages.add(a_tag['href']) # Adiciona o href do link ao set return
     
-    # Encontra todos os links dentro de <li> que contêm a classe 'category'
-    category_items = soup.find_all('li', class_=['', 'with-child'])  # Pode-se procurar por 'class_=""' se não tiver outra classe
-    
-    for li in category_items:
-        a_tag = li.find('a', class_='category', href=True)  # Encontra o link dentro do <li>
-        if a_tag:
-            links.append(a_tag['href'])  # Adiciona o href do link à lista
-    
-    return links
+    return pages
+
+
+
 
 # Teste das funções
 if __name__ == '__main__':
@@ -43,8 +42,9 @@ if __name__ == '__main__':
     
     if page_content:
         category_links = parse_category_links(page_content)
-        print("Links encontrados em 'category-aditional':")
+        print("Links encontrados em Categorias:\n")
         for link in category_links:
             print(link)
     else:
         print("Falha ao obter o HTML da página.")
+        

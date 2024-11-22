@@ -1,7 +1,5 @@
 # OBTEM OS LINKS DESTACADOS NO CABEÇALHO
 
-
-
 import requests
 from bs4 import BeautifulSoup
 
@@ -19,31 +17,26 @@ def fetch_page():
         print(f"Erro ao acessar a página: {e}")
         return None
 
-# def parse_page(html):
-#     soup = BeautifulSoup(html, 'html.parser')
-#     return soup.prettify()
-
-def parse_category_links(html):
+def parse_main_categories(html):
     soup = BeautifulSoup(html, 'html.parser')
-    links = []
+    pages = set()
     
     # Encontra o div com a classe 'category-aditional'
-    category_aditional = soup.find('div', class_='category-aditional')
+    links = soup.find('div', class_='category-aditional')
     
-    if category_aditional:
-        # Procura todos os links dentro da estrutura do category-aditional
-        for a_tag in category_aditional.find_all('a', href=True):
-            links.append(a_tag['href'])  # Adiciona o href de cada link à lista
-    
-    return links
+    for link in links.find_all('a', href=True):
+        if 'href' in link.attrs:
+            if link.attrs['href'] not in pages:
+                newPage = link.attrs['href']
+                pages.add(newPage)
+    return pages
 
-# Teste das funções
 if __name__ == '__main__':
     page_content = fetch_page()
     
     if page_content:
-        category_links = parse_category_links(page_content)
-        print("Links encontrados em 'category-aditional':")
+        category_links = parse_main_categories(page_content)
+        print("Links encontrados nos destaques:\n")
         for link in category_links:
             print(link)
     else:

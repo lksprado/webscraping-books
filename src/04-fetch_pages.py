@@ -4,6 +4,7 @@
 
 import requests
 from bs4 import BeautifulSoup
+import re
 
 def fetch_page():
     url = 'https://livraria.sensoincomum.org/filosofia'
@@ -19,13 +20,10 @@ def fetch_page():
         print(f"Erro ao acessar a página: {e}")
         return None
 
-# def parse_page(html):
-#     soup = BeautifulSoup(html, 'html.parser')
-#     return soup.prettify()
-
 def parse_pages(html):
     soup = BeautifulSoup(html, 'html.parser')
-    links = []
+    pages = set()
+    regex = r"(?<=\?page=)\d+"
     
     # Encontra todos os elementos <li> com a classe 'with-child'
     page_items = soup.find_all('div', class_='links')
@@ -34,9 +32,16 @@ def parse_pages(html):
         # Encontra o link principal da categoria
         page_links = link_div.find_all('a', href=True)
         for page_link in page_links:
-            links.append(page_link['href'])
-                
-    return links
+            href = page_link['href']
+            # Procura por números após '?page='
+            match = re.search(regex, href)
+            if match:
+                # Adiciona o número da página ao conjunto
+                pages.add(int(match.group()))
+    if pages:
+        full_range = set(range(min(pages), max(pages) + 1))
+        pages.update(full_range)
+    return pages
 
 # Teste das funções
 if __name__ == '__main__':
@@ -44,7 +49,7 @@ if __name__ == '__main__':
     
     if page_content:
         category_links = parse_pages(page_content)
-        print("Links encontrados em 'category-aditional':")
+        print("Páginas encontradas:\n")
         for link in category_links:
             print(link)
     else:
