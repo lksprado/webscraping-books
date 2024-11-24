@@ -34,6 +34,6 @@ df_details_join.drop(columns=['rating_value_goodreads', 'rating_value_google', '
 df_final = df_main.merge(df_details_join, how='left', on='isbn')
 
 df_final['paginas'] = df_final['paginas'].fillna(df_details_join['page_count'])
-df_final.drop(columns=['page_count'])
+df_final.drop(columns=['page_count'], inplace=True)
 
 df_final.to_csv('data/final_books_details.csv', sep=';', quotechar='"', encoding='utf-8', index=False)

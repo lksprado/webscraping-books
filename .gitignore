@@ -4,3 +4,4 @@ poetry.lock
 pyproject.toml
 html_pages
 data
+secrets
